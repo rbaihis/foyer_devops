@@ -1,0 +1,11 @@
+# Ignore everything
+*
+
+# Allow specific files or directories
+!.gitignore
+!src/
+## * -> direct-children(files-only) , ** -> all-sub-children(files+directories)
+!src/**
+!pom.xml
+!README.md
+!Dockerfile
