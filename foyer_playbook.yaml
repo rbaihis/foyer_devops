@@ -6,12 +6,12 @@
     ansible_python_interpreter: /usr/bin/python3  # Ensure you're using Python 3
     compose_dir: /05-foyer-app
     compose_file_path: "{{ compose_dir }}/docker-compose.yml"  
-    prometheus_dir: "~/04-foyer-infra/prom_conf"  
+    prometheus_dir: "/04-foyer-infra/prom_conf"  
     prometheus_file_path: "{{ prometheus_dir }}/prometheus.yml"
     db_name: db-foyer
     db_user: seif
     db_password: "openstack"   
-    mysql_container_name: mysql
+    mysql_container_name: mysql-devops
     docker_image: rbaihis/foyer:5.0.0
     external_docker_network: infra-network 
 
