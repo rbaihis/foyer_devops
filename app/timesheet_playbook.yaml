@@ -16,6 +16,7 @@
     external_docker_network: infra-network 
 
   tasks:
+
     - name: Check if MySQL is already running
       wait_for:
         port: 3306

@@ -1,9 +1,9 @@
 # Allow specific files or directories
+*
+# accepting those
 !.gitignore
 !app
 !app/*
 !app/** 
 !README.md
 
-# Ignore everything
-*
