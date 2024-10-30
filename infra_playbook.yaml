@@ -6,12 +6,16 @@
     ansible_python_interpreter: /usr/bin/python3  # Ensure Python 3 usage
     compose_dir: /05-foyer-app
     compose_file_path: "{{ compose_dir }}/docker-compose.yml"  
-    prometheus_dir: "{{ compose_dir }}/prom_conf"  
+    git_prometheus_dir: ./prom_conf #src
+    prometheus_dir: "{{ compose_dir }}/prom_conf" #dest 
     prometheus_file_path: "{{ prometheus_dir }}/prometheus.yml"
     prometheus_url: http://192.168.43.10:9090
-    grafana_datasource_dir: "{{ compose_dir }}/grafana/datasources"  
-    grafana_dashboards_dir: "{{ compose_dir }}/grafana/dashboards"  
-    alertmanager_dir: "{{ compose_dir }}/alertmanager"  
+    git_alertmanager_dir: ./alertmanager #src
+    alertmanager_dir: "{{ compose_dir }}/alertmanager"  #dest
+    git_grafana_datasource_dir: ./grafana/datasources #src
+    grafana_datasource_dir: "{{ compose_dir }}/grafana/datasources" #dest
+    git_grafana_dashboards_dir: ./grafana/dashboards #src
+    grafana_dashboards_dir: "{{ compose_dir }}/grafana/dashboards"  #dest
     db_name: db-foyer
     db_user: seif
     db_password: "openstack"  
@@ -44,10 +48,10 @@
         state: directory
         mode: '0755'
     
-    - name: Copy prom_conf/prometheus.yml to destination only if it does not exist
+    - name: Copy prom_conf/* to destination only if it does not exist
       ansible.builtin.copy:
-        src: prom_conf/prometheus.yml
-        dest: "{{ prometheus_file_path }}"
+        src: "{{git_prometheus_dir}}/*"
+        dest: "{{ prometheus_dir }}"
         force: no 
 
     - name: Create AlertManager directory
@@ -58,7 +62,7 @@
     
     - name: Copy all AlertManger directory files to destination only if it does not exist
       ansible.builtin.copy:
-        src: "{{ alertmanager_dir }}/*"
+        src: "{{ git_alertmanager_dir }}/*"
         dest: "{{ alertmanager_dir }}"
         force: no 
 
@@ -70,7 +74,7 @@
     
     - name: Copy all grafana resource directory files to destination only if it does not exist
       ansible.builtin.copy:
-        src: "{{ grafana_datasource_dir }}/*"
+        src: "{{ git_grafana_datasource_dir }}/*"
         dest: "{{ grafana_datasource_dir }}"
         force: no 
 
@@ -82,7 +86,7 @@
     
     - name: Copy all grafana dashboard directory files to destination only if it does not exist
       ansible.builtin.copy:
-        src: "{{ grafana_dashboards_dir }}/*"
+        src: "{{ git_grafana_dashboards_dir }}/*"
         dest: "{{ grafana_dashboards_dir }}"
         force: no 
 
