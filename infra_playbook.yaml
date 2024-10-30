@@ -182,7 +182,7 @@
                 - grafana:/var/lib/grafana
                 - {{ git_grafana_datasource_dir }}:/etc/grafana/provisioning/datasources  # Added provisioning for datasources and dashboards
                 - {{ git_grafana_dashboards_dir }}:/etc/grafana/provisioning/dashboards #config-file to where files exist
-                - {{git_grafana_dashboards_json_files_dir}}:/var/lib/grafana/dashboards # json dashbords exist her
+                - {{ git_grafana_dashboards_json_files_dir }}:/var/lib/grafana/dashboards # json dashbords exist her
               networks:
                 - {{ external_docker_network }}
               restart: unless-stopped
