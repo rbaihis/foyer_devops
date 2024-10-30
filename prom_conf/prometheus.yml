@@ -30,7 +30,7 @@ scrape_configs:
   metrics_path: '/metrics'
   static_configs: # List of static targets for Prometheus to scrape. This is the simplest form of service discovery.
   - targets:
-    - '127.0.0.1:9100'
+    - '192.168.43.10:9100'
     labels:
       group: 'local_vm_host'
 # END ANSIBLE MANAGED BLOCK
@@ -43,7 +43,7 @@ scrape_configs:
   metrics_path: '/prometheus'
   static_configs: # List of static targets for Prometheus to scrape. This is the simplest form of service discovery.
   - targets:
-    - '127.0.0.1:8080'
+    - '192.168.43.10:8080'
     labels:
       group: 'jenkins_server'
 # END ANSIBLE MANAGED BLOCK
