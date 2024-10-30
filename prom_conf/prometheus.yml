@@ -8,7 +8,7 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-            - 'alertmanager:9093'
+            - '192.168.43.10:9093'
 
 rule_files:
   - '/etc/prometheus/rules.yml'
@@ -21,7 +21,7 @@ scrape_configs:
 - job_name: 'prometheus'
   scheme: 'http' # defaul to http (can be removed)
   static_configs: # List of static targets for Prometheus to scrape. This is the simplest form of service discovery.
-  - targets: ['127.0.0.1:9090']
+  - targets: ['192.168.43.10:9090']
 
 # BEGIN vm_monitor  BLOCK
 #--------------vm-host---------------------------------
