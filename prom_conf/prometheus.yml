@@ -4,6 +4,7 @@ global:
   external_labels:
     monitor: 'prod-monitor'
 
+
 alerting:
   alertmanagers:
     - static_configs:
@@ -17,11 +18,12 @@ rule_files:
 #Defines the endpoints (targets) Prometheus will scrape for metrics. This is the most important section as it defines how to gather data.
 scrape_configs:
 
+
 #-----------promethus-----------------------------
 - job_name: 'prometheus'
   scheme: 'http' # defaul to http (can be removed)
   static_configs: # List of static targets for Prometheus to scrape. This is the simplest form of service discovery.
-  - targets: ['192.168.43.10:9090']
+  - targets: [ '192.168.43.10:9090' ]
 
 # BEGIN vm_monitor  BLOCK
 #--------------vm-host---------------------------------
@@ -30,7 +32,7 @@ scrape_configs:
   metrics_path: '/metrics'
   static_configs: # List of static targets for Prometheus to scrape. This is the simplest form of service discovery.
   - targets:
-    - '192.168.43.10:9100'
+    - '192.168.43.10:9100' 
     labels:
       group: 'local_vm_host'
 # END ANSIBLE MANAGED BLOCK
@@ -45,6 +47,6 @@ scrape_configs:
   - targets:
     - '192.168.43.10:8080'
     labels:
-      group: 'jenkins_server'
+      group: 'jenkins_server' 
 # END ANSIBLE MANAGED BLOCK
 
