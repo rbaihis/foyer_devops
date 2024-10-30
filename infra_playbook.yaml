@@ -50,7 +50,7 @@
     
     - name: Copy prom_conf/* to destination only if not exist
       ansible.builtin.copy:
-        src: "{{git_prometheus_dir}}/*"
+        src: "{{git_prometheus_dir}}/"
         dest: "{{ prometheus_dir }}/"
         force: no 
 
@@ -62,7 +62,7 @@
     
     - name: Copy all AlertManger directory files to destination only if it does not exist
       ansible.builtin.copy:
-        src: "{{ git_alertmanager_dir }}/*"
+        src: "{{ git_alertmanager_dir }}/"
         dest: "{{ alertmanager_dir }}/"
         force: no 
 
@@ -74,7 +74,7 @@
     
     - name: Copy all grafana resource directory files to destination only if it does not exist
       ansible.builtin.copy:
-        src: "{{ git_grafana_datasource_dir }}/*"
+        src: "{{ git_grafana_datasource_dir }}/"
         dest: "{{ grafana_datasource_dir }}/"
         force: no 
 
@@ -86,7 +86,7 @@
     
     - name: Copy all grafana dashboard directory files to destination only if it does not exist
       ansible.builtin.copy:
-        src: "{{ git_grafana_dashboards_dir }}/*"
+        src: "{{ git_grafana_dashboards_dir }}/"
         dest: "{{ grafana_dashboards_dir }}/"
         force: no 
 
