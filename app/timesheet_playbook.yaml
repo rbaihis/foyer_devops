@@ -1,0 +1,113 @@
+---
+- name: Manage timesheet app set up
+  hosts: prodVm
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  # Ensure you're using Python 3
+    compose_dir: /05-foyer-app
+    compose_file_path: "{{ compose_dir }}/docker-compose.yml"  
+    prometheus_dir: "~/04-foyer-infra/prom_conf"  
+    prometheus_file_path: "{{ prometheus_dir }}/prometheus.yml"
+    db_name: db-foyer
+    db_user: seif
+    db_password: "openstack"   
+    mysql_container_name: mysql
+    docker_image: rbaihis/foyer:5.0.0
+    external_docker_network: infra-network 
+
+  tasks:
+    - name: Check if MySQL is already running
+      wait_for:
+        port: 3306
+        timeout: 15 
+        state: started    
+
+    - name: Check if the database exists
+      shell: |
+        docker exec {{ mysql_container_name }} mysql -u {{ db_user }} -p{{ db_password }} -e "USE {{ db_name }}"
+      register: db_check
+      ignore_errors: yes
+
+    - name: Create the database if it does not exist
+      shell: |
+        docker exec {{ mysql_container_name }} mysql mysql -u {{ db_user }} -p{{ db_password }} -e "CREATE DATABASE {{ db_name }}"
+      when: db_check.rc != 0
+
+    - name: Create Docker Compose directory
+      file:
+        path: "{{ compose_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create Docker Compose file  for foyer app
+      copy:
+        dest: "{{ compose_file_path }}"
+        content: |
+          services:
+            timesheet-app:
+              image: rbaihis/foyer:5.0.0-SNAPSHOT
+              ports:
+                - "8079:8079"
+              environment:
+                SERVER_PORT: 8079
+                DB_HOST: mysql  # Ensure this matches the hostname in your existing Compose setup
+                DB_PORT: 3306
+                DB_NAME: timesheet-devops-db
+                DB_USERNAME: {{ db_user }}
+                DB_PASSWORD: {{ db_password }}
+                LOG_PATH: /logs/timesheet-devops.log
+              networks:
+                - {{ external_docker_network }}
+          # volumes:
+          #   logs:
+          networks:
+            {{ external_docker_network }}: # predefined network created as external befor the docker compose of mysql
+              external: true
+
+
+    - name: Start Docker Compose
+      command: docker compose up -d
+      args:
+        chdir: "{{ compose_dir }}"
+
+
+    # - name: Wait for app timesheet port to see if open
+    #   wait_for:
+    #     port: 8079
+    #     timeout: 20
+    #     state: started
+
+    - name: Read the contents of prometheus.yml
+      ansible.builtin.slurp:
+        src: "{{ prometheus_file_path }}"
+      register: prometheus_file
+
+    - name: Decode prometheus.yaml content
+      set_fact:
+        prometheus_content: "{{ prometheus_file.content | b64decode }}"
+
+    - name: Check if target exists
+      set_fact:
+        target_exists: "{{ prometheus_content is search(\"- '192.168.43.10:8079'\") }}"
+
+    - name: Add timesheet-devops-service job if both job_name and target are missing
+      ansible.builtin.blockinfile:
+        path: "{{ prometheus_file_path }}"
+        # marker: #--------------timesheet-devops-service---------------------------------
+        block: |
+          #--------------foyer-target-auto-add---------------------------------
+          - job_name: 'foyer-service'
+            metrics_path: '/api/v1/actuator/prometheus'
+            static_configs:
+            - targets:
+              - '192.168.43.10:8079'
+              labels:
+                group: 'foyer-API'
+          
+        insertafter: EOF
+      when: not target_exists
+
+    - name: Reload Prometheus configuration
+      command: curl -X POST http://192.168.43.10:9090/-/reload
+      ignore_errors: no  # This allows the playbook to continue even if this task fails
+
