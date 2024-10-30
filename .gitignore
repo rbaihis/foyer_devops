@@ -3,6 +3,6 @@
 
 # Allow specific files or directories
 !.gitignore
-!app
+!app/
 !app/** 
 !README.md
