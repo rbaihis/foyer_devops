@@ -1,6 +1,6 @@
 #!/bin/bash
 
 #composeUp
-docker compose -f /git_prometheus/docker-compose.yml down
+docker compose -f /04-foyer-infra/docker-compose.yml down
 
 
