@@ -4,7 +4,7 @@
   become: yes
   vars:
     ansible_python_interpreter: /usr/bin/python3  # Ensure Python 3 usage
-    compose_dir: /05-foyer-app
+    compose_dir: /04-foyer-infra
     compose_file_path: "{{ compose_dir }}/docker-compose.yml"  
     git_prometheus_dir: ./prom_conf #src
     prometheus_dir: "{{ compose_dir }}/prom_conf" #dest 
@@ -128,7 +128,7 @@
               volumes:
                 - prometheus:/prometheus
                 #remote upload wont work if file only mounted (container can't see changes in this situation so no changes re noticed acutually unless completely restarte)
-                - {{ prometheus_dir }}:/etc/prometheus
+                - {{ git_prometheus_dir }}:/etc/prometheus
               command:
                 - '--config.file=/etc/prometheus/prometheus.yml'
                 - '--storage.tsdb.path=/prometheus'
@@ -147,7 +147,7 @@
               container_name: alertmanager
               volumes:
                 #- ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-                - {{ alertmanager_dir }}:/etc/alertmanager
+                - {{ git_alertmanager_dir }}:/etc/alertmanager
               command:
                 - "--config.file=/etc/alertmanager/alertmanager.yml"
                 - "--storage.path=/alertmanager"
@@ -176,8 +176,8 @@
                   condition: service_started
               volumes:
                 - grafana:/var/lib/grafana
-                - {{ grafana_datasource_dir }}:/etc/grafana/provisioning  # Added provisioning for datasources and dashboards
-                - {{ grafana_dashboards_dir }}:/var/lib/grafana/dashboards
+                - {{ git_grafana_datasource_dir }}:/etc/grafana/provisioning  # Added provisioning for datasources and dashboards
+                - {{ git_grafana_dashboards_dir }}:/var/lib/grafana/dashboards
               networks:
                 - {{ external_docker_network }}
               restart: unless-stopped
