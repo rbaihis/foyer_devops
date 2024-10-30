@@ -15,6 +15,7 @@
     git_grafana_datasource_dir: ./grafana/datasources #src
     grafana_datasource_dir: "{{ compose_dir }}/grafana/datasources" #dest
     git_grafana_dashboards_dir: ./grafana/dashboards #src
+    git_grafana_dashboards_json_files_dir: ./grafana/dashboards_files #src
     grafana_dashboards_dir: "{{ compose_dir }}/grafana/dashboards"  #dest
     db_name: db-foyer
     db_user: seif
@@ -104,7 +105,7 @@
         dest: "{{ compose_file_path }}"
         content: |
           services:
-            mysql:
+            mysql-devops:
               image: mysql:latest
               container_name: {{ mysql_container_name }}
               environment:
@@ -120,7 +121,7 @@
               networks:
                 - {{ external_docker_network }}
           #---------------------monitoring---------------------------------
-            prometheus:
+            prometheus-devops:
               container_name: prometheus-devops
               image: prom/prometheus
               ports:
@@ -142,7 +143,7 @@
               restart: unless-stopped
 
             #---------AlertManager---
-            alertmanager:
+            alertmanager-devops:
               image: prom/alertmanager:v0.26.0
               container_name: alertmanager
               volumes:
@@ -153,12 +154,15 @@
                 - "--storage.path=/alertmanager"
               ports:
                 - "9093:9093"
+              depends_on:
+                prometheus-devops:
+                  condition: service_started
               networks:
                 - {{ external_docker_network }}
               restart: unless-stopped
 
-            grafana:
-              container_name: grafana
+            grafana-devops:
+              container_name: grafana-devops
               image: grafana/grafana
               environment:
                 - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -166,22 +170,22 @@
                 - GF_AUTH_BASIC_ENABLED=false
                 - GF_FEATURE_TOGGLES_ENABLE=accessControlOnCall
                 - GF_INSTALL_PLUGINS=https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
-                - GF_DATASOURCES__DEFAULT__TYPE=prometheus
-                - GF_DATASOURCES__DEFAULT__URL={{ prometheus_url }}
-                - GF_DATASOURCES__DEFAULT__ACCESS=proxy
+                #- GF_DATASOURCES__DEFAULT__TYPE=prometheus
+                #- GF_DATASOURCES__DEFAULT__URL=http://192.168.43.10:9090
+                #- GF_DATASOURCES__DEFAULT__ACCESS=proxy
               ports:
                 - "3000:3000"
               depends_on:
-                prometheus:
+                prometheus-devops:
                   condition: service_started
               volumes:
-                - grafana:/var/lib/grafana
-                - {{ git_grafana_datasource_dir }}:/etc/grafana/provisioning  # Added provisioning for datasources and dashboards
-                - {{ git_grafana_dashboards_dir }}:/var/lib/grafana/dashboards
+                - graf:/var/lib/grafana
+                - {{ git_grafana_datasource_dir }}:/etc/grafana/provisioning/datasources  # Added provisioning for datasources and dashboards
+                - {{ git_grafana_dashboards_dir }}:/etc/grafana/provisioning/dashboards #config-file to where files exist
+                - {{git_grafana_dashboards_json_files_dir}}:/var/lib/grafana/dashboards # json dashbords exist her
               networks:
                 - {{ external_docker_network }}
               restart: unless-stopped
-
           #----------
           volumes:
             mysql_data_vol: 
