@@ -98,7 +98,7 @@
         block: |
           #--------------foyer-target-auto-add---------------------------------
           - job_name: 'foyer-service'
-            metrics_path: '/api/v1/actuator/prometheus'
+            metrics_path: '/api/foyer/actuator/prometheus'
             static_configs:
             - targets:
               - '192.168.43.10:8079'
