@@ -45,18 +45,18 @@
         dest: "{{ compose_file_path }}"
         content: |
           services:
-            timesheet-app:
-              image: rbaihis/foyer:5.0.0-SNAPSHOT
+            foyer-app:
+              image: rbaihis/foyer:5.0.0
               ports:
                 - "8079:8079"
               environment:
                 SERVER_PORT: 8079
                 DB_HOST: mysql  # Ensure this matches the hostname in your existing Compose setup
                 DB_PORT: 3306
-                DB_NAME: timesheet-devops-db
+                DB_NAME: db-foyer
                 DB_USERNAME: {{ db_user }}
                 DB_PASSWORD: {{ db_password }}
-                LOG_PATH: /logs/timesheet-devops.log
+                LOG_PATH: /logs/foyer-devops.log
               networks:
                 - {{ external_docker_network }}
           # volumes:
