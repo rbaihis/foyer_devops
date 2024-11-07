@@ -89,7 +89,7 @@
 
     - name: Check if target exists
       set_fact:
-        target_exists: "{{ prometheus_content is search(\"- '192.168.43.10:8079'\") }}"
+        target_exists: "{{ prometheus_content is search(\"- 'rabbeh.giize.com:8079'\") }}"
 
     - name: Add timesheet-devops-service job if both job_name and target are missing
       ansible.builtin.blockinfile:
@@ -101,7 +101,7 @@
             metrics_path: '/api/foyer/actuator/prometheus'
             static_configs:
             - targets:
-              - '192.168.43.10:8079'
+              - 'rabbeh.giize.com:8079'
               labels:
                 group: 'foyer-API'
           
@@ -109,6 +109,6 @@
       when: not target_exists
 
     - name: Reload Prometheus configuration
-      command: curl -X POST http://192.168.43.10:9090/-/reload
+      command: curl -X POST http://rabbeh.giize.com:9090/-/reload
       ignore_errors: no  # This allows the playbook to continue even if this task fails
 
