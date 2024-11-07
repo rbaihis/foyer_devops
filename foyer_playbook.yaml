@@ -67,7 +67,7 @@
 
 
     - name: Start Docker Compose
-      command: docker compose up -d
+      command: docker compose up -d || true
       args:
         chdir: "{{ compose_dir }}"
 
