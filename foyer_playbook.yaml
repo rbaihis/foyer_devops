@@ -67,16 +67,16 @@
 
 
     - name: Start Docker Compose
-      command: docker compose up -d || true
+      command: docker compose up -d 
       args:
         chdir: "{{ compose_dir }}"
 
 
-    # - name: Wait for app timesheet port to see if open
-    #   wait_for:
-    #     port: 8079
-    #     timeout: 20
-    #     state: started
+    - name: Wait for app timesheet port to see if open
+      wait_for:
+        port: 8079
+        timeout: 15
+        state: started
 
     - name: Read the contents of prometheus.yml
       ansible.builtin.slurp:
@@ -94,7 +94,7 @@
     - name: Add timesheet-devops-service job if both job_name and target are missing
       ansible.builtin.blockinfile:
         path: "{{ prometheus_file_path }}"
-        # marker: #--------------timesheet-devops-service---------------------------------
+        # marker: #--------------foyer-devops-service---------------------------------
         block: |
           #--------------foyer-target-auto-add---------------------------------
           - job_name: 'foyer-service'
