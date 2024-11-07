@@ -4,7 +4,7 @@ FROM amazoncorretto:17
 WORKDIR /app
 
 # Copy the JAR file into the container
-COPY ./target/**.jar /app/foyer-devops.jar
+COPY ./target/tp-foyer-5.0.0.jar /app/foyer-devops.jar
 
 # Expose the port that the application will run on
 EXPOSE 8079
